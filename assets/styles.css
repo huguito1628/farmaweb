@@ -27,53 +27,72 @@ html,body{
 /* Contenedor principal */
 .container{max-width:1100px;margin:0 auto;padding:24px}
 
-/* Navbar */
-.nav{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:rgba(255,255,255,0.85);
-  backdrop-filter:saturate(180%) blur(8px);
-  border-bottom:1px solid var(--border);
-}
-.nav .inner{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  justify-content:space-between;
-  padding:14px 24px;
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-weight:700;
-  letter-spacing:.3px;
-  color:var(--brand);
-}
-.brand .dot{
-  width:12px;
-  height:12px;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+/* Navbar elegante con fondo FarmaPlus */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #10b981; /* mismo color que auth.css */
+  padding: 1rem 2rem;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
 }
 
-/* Tabs */
-.tabs{display:flex;gap:10px;flex-wrap:wrap}
-.tab{
-  padding:10px 14px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:rgba(16,185,129,0.1);
-  transition:all .2s;
-  color:var(--text);
-}
-.tab:hover{transform:translateY(-2px);border-color:var(--brand-2)}
-.tab.active{
-  background:linear-gradient(180deg,rgba(16,185,129,.15),rgba(59,130,246,.10));
-  border-color:var(--brand);
+.nav .inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: white;
+}
+
+.brand .dot {
+  width: 10px;
+  height: 10px;
+  background: #fff; /* igual que auth.css */
+  border-radius: 50%;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6ee7b7, #10b981);
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;            /* quita borde */
+  text-decoration: none;   /* quita subrayado si es enlace */
+}
+
+
+.tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3); /* sombra verde suave */
+}
+
+.tab.active {
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(16,185,129,0.4);
+  border-bottom: none;  /* quita subrayado activo */
+}
 /* Headings */
 h1{font-size:28px;margin:10px 0 8px;color:var(--brand)}
 .sub{color:var(--muted);margin-top:0}
@@ -105,17 +124,23 @@ h1{font-size:28px;margin:10px 0 8px;color:var(--brand)}
 label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
 
 /* Botones */
-.btn{
-  padding:10px 16px;
-  border:none;
-  border-radius:12px;
-  font-weight:600;
-  color:white;
-  background:var(--brand);
-  cursor:pointer;
-  transition:all .2s;
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  color: white;
+  background: var(--brand); /* mantiene el verde sólido original */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none; /* quita subrayado */
 }
-.btn:hover{transform:translateY(-2px);background:var(--brand-2)}
+
+.btn:hover {
+  transform: translateY(-2px);
+  background: var(--brand-2); /* efecto hover con tu azul verde */
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
 .btn.secondary{background:#6b7280}
 .btn.ghost{background:transparent;border:1px solid var(--border)}
 .btn.danger{background:var(--danger)}

@@ -4,24 +4,74 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FarmaPlus · Acceso</title>
-  <!-- Estilos -->
   <link rel="stylesheet" href="auth.css">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Fondo de partículas */
+    #tsparticles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .nav,
+    .auth-container,
+    footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-container {
+      background: rgba(255,255,255,0.85);
+      border-radius: 12px;
+      padding: 28px;
+      max-width: 400px;
+      margin: 60px auto;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      z-index: 1;
+    }
+
+    /* Tabs activos */
+    .tabs-auth button.active {
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+    }
+  </style>
 </head>
 <body>
+
+<!-- Partículas -->
+<div id="tsparticles"></div>
 
 <div class="nav">
   <div class="brand"><span class="dot"></span>FarmaPlus</div>
 </div>
 
-<div class="container auth-container">
+<div class="auth-container">
   <h1>Bienvenido a FarmaPlus</h1>
   <p class="sub">Inicia sesión o regístrate para continuar.</p>
 
   <div class="message" id="msgBox"></div>
 
+  <!-- Tabs -->
   <div class="tabs-auth">
-    <button class="btn" id="tabLogin">Iniciar sesión</button>
-    <button class="btn secondary" id="tabRegister">Registrarse</button>
+    <button class="btn active" id="tabLogin">Iniciar sesión</button>
+    <button class="btn" id="tabRegister">Registrarse</button>
   </div>
 
   <!-- LOGIN -->
@@ -53,6 +103,29 @@
 
 <footer>FarmaPlus · Acceso</footer>
 
+<!-- tsParticles -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+<script>
+tsParticles.load("tsparticles", {
+  detectRetina: true,
+  fpsLimit: 60,
+  particles: {
+    number: { value: 60, density: { enable: true, area: 800 } },
+    color: { value: "#000000" },
+    shape: { type: "circle" },
+    opacity: { value: 0.6, random: { enable: true, minimumValue: 0.2 } },
+    size: { value: { min: 1, max: 5 } },
+    move: { enable: true, speed: 1, direction: "none", random: true, straight: false, outModes: { default: "out" } },
+    links: { enable: true, distance: 120, color: "#bfa089", opacity: 0.2, width: 1 }
+  },
+  interactivity: {
+    events: { onHover: { enable: true, mode: "grab" }, resize: true },
+    modes: { grab: { distance: 140, links: { opacity: 0.3 } } }
+  },
+  background: { color: "transparent" }
+});
+</script>
+
 <script>
 const tabLogin = document.getElementById("tabLogin");
 const tabRegister = document.getElementById("tabRegister");
@@ -67,22 +140,22 @@ function showMessage(text, type="success") {
   setTimeout(() => msgBox.style.display = "none", 3000);
 }
 
-// Cambio de pestañas
+/* Alternar tabs con active */
 tabLogin.addEventListener("click", () => {
   loginForm.classList.remove("hidden");
   registerForm.classList.add("hidden");
-  tabLogin.classList.remove("secondary");
-  tabRegister.classList.add("secondary");
+  tabLogin.classList.add("active");
+  tabRegister.classList.remove("active");
 });
 
 tabRegister.addEventListener("click", () => {
   registerForm.classList.remove("hidden");
   loginForm.classList.add("hidden");
-  tabRegister.classList.remove("secondary");
-  tabLogin.classList.add("secondary");
+  tabRegister.classList.add("active");
+  tabLogin.classList.remove("active");
 });
 
-// Registro
+/* Registro */
 registerForm.addEventListener("submit", e => {
   e.preventDefault();
   const user = document.getElementById("regUser").value.trim();
@@ -99,7 +172,7 @@ registerForm.addEventListener("submit", e => {
   tabLogin.click();
 });
 
-// Login
+/* Login */
 loginForm.addEventListener("submit", e => {
   e.preventDefault();
   const user = document.getElementById("loginUser").value.trim();

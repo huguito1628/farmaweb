@@ -1,24 +1,12 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FarmaPlus · Inicio</title>
-  <link rel="stylesheet" href="assets/styles.css">
-  <script src="assets/main.js"></script>
-  <link rel="stylesheet" href="assets/popup.css">
-
-  <script>
-    // 🔒 Validación de sesión
-    if (!localStorage.getItem("loggedUser")) {
-      window.location.replace("auth.html");
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedUser");
-      window.location.replace("auth.html");
-    }
-  </script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FarmaPlus · Inicio</title>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/popup.css">
+<script src="assets/main.js"></script>
 </head>
 <body>
 
@@ -31,7 +19,6 @@
       <a class="tab" data-tab="orders" href="pedidos.html">Pedidos</a>
       <a class="tab" data-tab="clients" href="clientes.html">Clientes</a>
     </div>
-    <!-- 🔘 Botón de logout -->
     <button class="btn secondary" onclick="logout()" style="margin-left:auto">Cerrar sesión</button>
   </div>
 </div>
@@ -76,76 +63,166 @@
 
 <!-- POPUP UNIVERSAL -->
 <div class="popup" id="popup">
-  <div class="popup-content">
-    <span class="popup-close" id="closePopup">&times;</span>
+  <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+    <span class="popup-close" id="closePopup" title="Cerrar">&times;</span>
     <h3 id="popupTitle"></h3>
-    <p id="popupMessage"></p>
+    <div id="popupMessage"></div>
   </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const loadData = (key) => JSON.parse(localStorage.getItem(key)) || [];
+  // Sesión (igual que antes)
+  if (!localStorage.getItem("loggedUser")) window.location.replace("auth.html");
+  function logout(){ localStorage.removeItem("loggedUser"); window.location.replace("auth.html"); }
 
+  const loadData = (key) => JSON.parse(localStorage.getItem(key)) || [];
   const popup = document.getElementById('popup');
   const popupTitle = document.getElementById('popupTitle');
   const popupMessage = document.getElementById('popupMessage');
   const closePopup = document.getElementById('closePopup');
 
-  function showPopup(type, title, message) {
-    popup.className = 'popup ' + type;
-    popupTitle.textContent = title;
-    popupMessage.textContent = message;
-    popup.classList.add('show');
+  // SHA-256 
+  const ADMIN_HASH = "8ddeaa4152e7c59f2240ce6716fed058771ed72efa6cfd991dae35ce7464610a";
+
+  // Convertir ArrayBuffer a hex
+  function bufToHex(buffer){
+    return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  closePopup.addEventListener('click', () => {
-    popup.classList.remove('show');
-  });
+  async function sha256Hex(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return bufToHex(buf);
+  }
+
+  function openPopup(title, html){
+    popupTitle.textContent = title;
+    popupMessage.innerHTML = html;
+    popup.classList.add('show');
+    const input = document.getElementById('adminKey');
+    if(input){
+      input.focus();
+      // enviar con Enter
+      input.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter'){
+          const btn = document.getElementById('submitKey');
+          if(btn) btn.click();
+        }
+      });
+    }
+  }
+
+  function close(){ popup.classList.remove('show'); popupTitle.textContent=''; popupMessage.innerHTML=''; }
+  closePopup.addEventListener('click', close);
+  popup.addEventListener('click', e => { if(e.target===popup) close(); });
 
   // Actualizar badges
   document.getElementById('statProducts').textContent = loadData('products').length;
   document.getElementById('statClients').textContent = loadData('clients').length;
   document.getElementById('statOrders').textContent = loadData('orders').length;
 
-  // Exportar datos
+  // Limite de intentos simple
+  let attempts = 0;
+  const MAX_ATTEMPTS = 3;
+
   document.getElementById('exportBtn').addEventListener('click', () => {
+    if(attempts >= MAX_ATTEMPTS){
+      openPopup('Bloqueado', '<p>Has excedido el número máximo de intentos. Intenta más tarde.</p>');
+      return;
+    }
+    openPopup('Contraseña requerida', `
+      <p>Ingresa la contraseña de administrador para exportar los datos:</p>
+      <input type="password" id="adminKey" placeholder="Clave" autocomplete="off"/>
+      <div style="margin-top:10px;">
+        <button class="btn" id="submitKey">Validar</button>
+        <button class="btn secondary" id="cancelKey">Cancelar</button>
+      </div>
+      <p id="errorMsg" style="color:#e74c3c; display:none; margin-top:8px;">Clave incorrecta ❌</p>
+      <p id="attemptsInfo" style="color:#555; display:block; margin-top:6px;">Intentos: ${attempts}/${MAX_ATTEMPTS}</p>
+    `);
+
+    // manejadores delegados (botón creado dinámicamente)
+    const onSubmit = async () => {
+      const inputEl = document.getElementById('adminKey');
+      const errEl = document.getElementById('errorMsg');
+      const attemptsInfo = document.getElementById('attemptsInfo');
+      if(!inputEl) return;
+      const value = inputEl.value || '';
+      try {
+        const hash = await sha256Hex(value);
+        if(hash === ADMIN_HASH){
+          // correcto
+          attempts = 0;
+          close();
+          exportData();
+        } else {
+          attempts++;
+          errEl.style.display = 'block';
+          inputEl.value = '';
+          inputEl.focus();
+          attemptsInfo.textContent = `Intentos: ${attempts}/${MAX_ATTEMPTS}`;
+          if(attempts >= MAX_ATTEMPTS){
+            errEl.textContent = 'Has excedido el número máximo de intentos.';
+            // opcional: bloquear botón por X segundos
+            const submitBtn = document.getElementById('submitKey');
+            if(submitBtn) submitBtn.disabled = true;
+          }
+        }
+      } catch(err){
+        console.error('Error al hashear la contraseña', err);
+        errEl.textContent = 'Error inesperado.';
+        errEl.style.display = 'block';
+      }
+    };
+
+    const onCancel = () => {
+      close();
+    };
+
+    // attach listeners (once)
+    setTimeout(()=>{ // pequeño timeout para asegurar que elementos están en DOM
+      const submitBtn = document.getElementById('submitKey');
+      const cancelBtn = document.getElementById('cancelKey');
+      if(submitBtn) submitBtn.addEventListener('click', onSubmit, { once: true });
+      if(cancelBtn) cancelBtn.addEventListener('click', onCancel, { once: true });
+    }, 10);
+  });
+
+  function exportData(){
     const data = {
       products: loadData('products'),
       clients: loadData('clients'),
-      orders: loadData('orders')
+      orders: loadData('orders'),
+      exportedAt: new Date().toISOString()
     };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = Object.assign(document.createElement('a'), { href: url, download: 'farmaplus-datos.json' });
+    const a = Object.assign(document.createElement('a'), { href:url, download:'farmaplus-datos.json' });
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  });
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
 
   // Importar datos
-  document.getElementById('importInput').addEventListener('change', (e) => {
+  document.getElementById('importInput').addEventListener('change', e=>{
     const file = e.target.files[0];
-    if (!file) return;
+    if(!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      try {
+    reader.onload = ()=>{
+      try{
         const obj = JSON.parse(reader.result);
-        if (obj.products) localStorage.setItem('products', JSON.stringify(obj.products));
-        if (obj.clients) localStorage.setItem('clients', JSON.stringify(obj.clients));
-        if (obj.orders) localStorage.setItem('orders', JSON.stringify(obj.orders));
-        showPopup('success', '¡Éxito!', 'Datos importados ✅');
-        setTimeout(() => location.reload(), 1500);
-      } catch (err) {
-        showPopup('error', 'Error', 'Archivo inválido.');
+        if(obj.products) localStorage.setItem('products', JSON.stringify(obj.products));
+        if(obj.clients) localStorage.setItem('clients', JSON.stringify(obj.clients));
+        if(obj.orders) localStorage.setItem('orders', JSON.stringify(obj.orders));
+        openPopup('¡Éxito!', '<p>Datos importados ✅</p>');
+        setTimeout(()=>location.reload(),1200);
+      }catch(err){
+        openPopup('Error','<p>Archivo inválido.</p>');
       }
     };
     reader.readAsText(file);
   });
-
-  // Importar con botón
-  document.getElementById('importBtn').addEventListener('click', () => {
-    document.getElementById('importInput').click();
-  });
+  document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importInput').click());
 });
 </script>
 

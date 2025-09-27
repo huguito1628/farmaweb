@@ -3,55 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FarmaPlus · Pedidos</title>
+  <title>FarmaPlus · Inicio</title>
   <link rel="stylesheet" href="assets/styles.css">
-  <link rel="stylesheet" href="assets/report.css"> <!-- Estilos del modal -->
-  
-  
-  <!-- CSS del popup -->
+  <script src="assets/main.js"></script>
   <link rel="stylesheet" href="assets/popup.css">
 
-  <!-- Librerías JS -->
-  <script src="assets/main.js"></script>
-  <script src="assets/orders.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
-  <script src="assets/report.js" defer></script>
-  
   <script>
     // 🔒 Validación de sesión
     if (!localStorage.getItem("loggedUser")) {
       window.location.replace("auth.html");
     }
+
     function logout() {
       localStorage.removeItem("loggedUser");
       window.location.replace("auth.html");
     }
   </script>
-
-  <style>
-    /* Autocomplete */
-    .autocomplete-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      max-height: 150px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      background: white;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      z-index: 10;
-    }
-    .autocomplete-list li {
-      padding: 8px;
-      cursor: pointer;
-    }
-    .autocomplete-list li:hover {
-      background: #f0f0f0;
-    }
-  </style>
 </head>
 <body>
 
@@ -64,102 +31,123 @@
       <a class="tab" data-tab="orders" href="pedidos.html">Pedidos</a>
       <a class="tab" data-tab="clients" href="clientes.html">Clientes</a>
     </div>
+    <!-- 🔘 Botón de logout -->
     <button class="btn secondary" onclick="logout()" style="margin-left:auto">Cerrar sesión</button>
   </div>
 </div>
-<script>setActive('orders')</script>
+<script>setActive('home')</script>
 
 <div class="container">
-  <h1>Pedidos</h1>
-  <p class="sub">Registra ventas vinculando cliente, productos y cantidades. El stock se descuenta automáticamente.</p>
+  <h1>Panel general</h1>
+  <p class="sub">Una vista rápida del estado de tu farmacia. Todo se guarda en tu navegador (LocalStorage), no necesitas servidor.</p>
 
-  <!-- Formulario pedido -->
-  <div class="panel">
-    <form id="orderForm" class="grid">
-      <div class="grid grid-3">
-        <!-- Cliente autocomplete -->
-        <div style="position:relative">
-          <label>Cliente</label>
-          <input type="text" id="clientInput" class="input" placeholder="Escribe el nombre del cliente" autocomplete="off" required>
-          <ul id="clientList" class="autocomplete-list"></ul>
-        </div>
-        <div>
-          <label>Fecha</label>
-          <input type="date" id="orderDate" class="input" required>
-        </div>
-        <div style="display:flex;align-items:end">
-          <button class="btn" type="submit">Guardar pedido</button>
-        </div>
-      </div>
-
-      <!-- Ítems del pedido -->
-      <div class="panel" style="background:transparent;border-style:dashed">
-        <div class="actions" style="justify-content:space-between;align-items:center">
-          <strong>Ítems</strong>
-          <button class="btn ghost" type="button" id="addItem">➕ Agregar ítem</button>
-        </div>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Stock</th>
-              <th>Cant.</th>
-              <th>Subtotal</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="itemsBody"></tbody>
-        </table>
-        <div class="actions" style="justify-content:flex-end">
-          <div class="stat" style="min-width:260px"><span>Total</span><strong id="total">$0.00</strong></div>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <!-- Historial pedidos + botón reporte -->
-  <div class="panel">
-    <div class="actions" style="justify-content:space-between">
-      <strong>Historial de pedidos</strong>
-      <div>
-        <small id="ordersCount" class="kbd"></small>
-        <button class="btn" id="btnReporte" style="margin-left:10px">Reporte de ventas</button>
-      </div>
+  <div class="grid grid-3">
+    <div class="panel card" id="stat-inventory">
+      <div class="stat"><span>Productos</span><span class="badge" id="statProducts">0</span></div>
+      <small>Administra el stock y precios desde <a href="inventario.html">Inventario</a>.</small>
     </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Cliente</th>
-          <th>Ítems</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="ordersBody"></tbody>
-    </table>
+    <div class="panel card">
+      <div class="stat"><span>Clientes</span><span class="badge" id="statClients">0</span></div>
+      <small>Agrega y edita clientes en <a href="clientes.html">Clientes</a>.</small>
+    </div>
+    <div class="panel card">
+      <div class="stat"><span>Pedidos</span><span class="badge" id="statOrders">0</span></div>
+      <small>Genera ventas desde <a href="pedidos.html">Pedidos</a>.</small>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="panel">
+    <h3>Atajos</h3>
+    <div class="actions">
+      <a class="btn" href="inventario.html">➕ Nuevo producto</a>
+      <a class="btn" href="clientes.html">👤 Nuevo cliente</a>
+      <a class="btn" href="pedidos.html">🧾 Nuevo pedido</a>
+      <button class="btn secondary" id="exportBtn">⬇️ Exportar datos</button>
+      <button class="btn secondary" id="importBtn">⬆️ Importar</button>
+      <input type="file" id="importInput" accept="application/json" style="display:none">
+    </div>
+    <small class="kbd">Consejo: usa Ctrl/Cmd + F para buscar en tablas.</small>
   </div>
 </div>
 
-<!-- Modal para reporte de ventas -->
-<div id="reportModal">
-  <div class="modal-content">
-    <button id="closeModal">&times;</button>
-    <h2 class="modal-title">Reporte de Ventas</h2>
-    <canvas id="salesChart" width="900" height="500"></canvas>
-  </div>
-</div>
+<footer>FarmaPlus · Inicio</footer>
 
-<footer>FarmaPlus · Pedidos</footer>
-
-<script>setActive("orders");</script>
-<!-- Popup universal -->
-<div id="universalPopup" class="popup">
+<!-- POPUP UNIVERSAL -->
+<div class="popup" id="popup">
   <div class="popup-content">
-    <span id="closeUniversalPopup" class="popup-close">×</span>
+    <span class="popup-close" id="closePopup">&times;</span>
     <h3 id="popupTitle"></h3>
     <p id="popupMessage"></p>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const loadData = (key) => JSON.parse(localStorage.getItem(key)) || [];
+
+  const popup = document.getElementById('popup');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupMessage = document.getElementById('popupMessage');
+  const closePopup = document.getElementById('closePopup');
+
+  function showPopup(type, title, message) {
+    popup.className = 'popup ' + type;
+    popupTitle.textContent = title;
+    popupMessage.textContent = message;
+    popup.classList.add('show');
+  }
+
+  closePopup.addEventListener('click', () => {
+    popup.classList.remove('show');
+  });
+
+  // Actualizar badges
+  document.getElementById('statProducts').textContent = loadData('products').length;
+  document.getElementById('statClients').textContent = loadData('clients').length;
+  document.getElementById('statOrders').textContent = loadData('orders').length;
+
+  // Exportar datos
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const data = {
+      products: loadData('products'),
+      clients: loadData('clients'),
+      orders: loadData('orders')
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: 'farmaplus-datos.json' });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  // Importar datos
+  document.getElementById('importInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        if (obj.products) localStorage.setItem('products', JSON.stringify(obj.products));
+        if (obj.clients) localStorage.setItem('clients', JSON.stringify(obj.clients));
+        if (obj.orders) localStorage.setItem('orders', JSON.stringify(obj.orders));
+        showPopup('success', '¡Éxito!', 'Datos importados ✅');
+        setTimeout(() => location.reload(), 1500);
+      } catch (err) {
+        showPopup('error', 'Error', 'Archivo inválido.');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // Importar con botón
+  document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('importInput').click();
+  });
+});
+</script>
+
 </body>
 </html>

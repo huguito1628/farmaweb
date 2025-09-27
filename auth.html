@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FarmaPlus · Acceso</title>
+  <!-- Estilos -->
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="nav">
+  <div class="brand"><span class="dot"></span>FarmaPlus</div>
+</div>
+
+<div class="container auth-container">
+  <h1>Bienvenido a FarmaPlus</h1>
+  <p class="sub">Inicia sesión o regístrate para continuar.</p>
+
+  <div class="message" id="msgBox"></div>
+
+  <div class="tabs-auth">
+    <button class="btn" id="tabLogin">Iniciar sesión</button>
+    <button class="btn secondary" id="tabRegister">Registrarse</button>
+  </div>
+
+  <!-- LOGIN -->
+  <form id="loginForm">
+    <div>
+      <label for="loginUser">Usuario</label>
+      <input class="input" id="loginUser" required placeholder="Tu usuario">
+    </div>
+    <div>
+      <label for="loginPass">Contraseña</label>
+      <input class="input" id="loginPass" type="password" required placeholder="Tu contraseña">
+    </div>
+    <button class="btn login" type="submit">Entrar</button>
+  </form>
+
+  <!-- REGISTRO -->
+  <form id="registerForm" class="hidden">
+    <div>
+      <label for="regUser">Usuario</label>
+      <input class="input" id="regUser" required placeholder="Elige un usuario">
+    </div>
+    <div>
+      <label for="regPass">Contraseña</label>
+      <input class="input" id="regPass" type="password" required placeholder="Elige una contraseña">
+    </div>
+    <button class="btn register" type="submit">Crear cuenta</button>
+  </form>
+</div>
+
+<footer>FarmaPlus · Acceso</footer>
+
+<script>
+const tabLogin = document.getElementById("tabLogin");
+const tabRegister = document.getElementById("tabRegister");
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const msgBox = document.getElementById("msgBox");
+
+function showMessage(text, type="success") {
+  msgBox.textContent = text;
+  msgBox.className = `message ${type}`;
+  msgBox.style.display = "block";
+  setTimeout(() => msgBox.style.display = "none", 3000);
+}
+
+// Cambio de pestañas
+tabLogin.addEventListener("click", () => {
+  loginForm.classList.remove("hidden");
+  registerForm.classList.add("hidden");
+  tabLogin.classList.remove("secondary");
+  tabRegister.classList.add("secondary");
+});
+
+tabRegister.addEventListener("click", () => {
+  registerForm.classList.remove("hidden");
+  loginForm.classList.add("hidden");
+  tabRegister.classList.remove("secondary");
+  tabLogin.classList.add("secondary");
+});
+
+// Registro
+registerForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const user = document.getElementById("regUser").value.trim();
+  const pass = document.getElementById("regPass").value.trim();
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  if (users.find(u => u.user === user)) {
+    showMessage("⚠️ El usuario ya existe", "error");
+    return;
+  }
+  users.push({ user, pass });
+  localStorage.setItem("users", JSON.stringify(users));
+  showMessage("✅ Registrado correctamente, ahora inicia sesión");
+  tabLogin.click();
+});
+
+// Login
+loginForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const user = document.getElementById("loginUser").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  const found = users.find(u => u.user === user && u.pass === pass);
+
+  if (found) {
+    localStorage.setItem("loggedUser", user);
+    window.location.href = "index.html";
+  } else {
+    showMessage("❌ Usuario o contraseña incorrectos", "error");
+  }
+});
+</script>
+</body>
+</html>

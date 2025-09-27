@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FarmaPlus · Inventario</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/popup.css">
+  <script src="assets/main.js" defer></script>
+  <script src="assets/inventory.js" defer></script>
+
+  <script>
+    // 🔒 Validación de sesión
+    if (!localStorage.getItem("loggedUser")) {
+      window.location.replace("auth.html");
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedUser");
+      window.location.replace("auth.html");
+    }
+  </script>
+</head>
+<body>
+
+<!-- 🔹 Navbar -->
+<div class="nav">
+  <div class="inner">
+    <div class="brand"><span class="dot"></span> FarmaPlus</div>
+    <div class="tabs">
+      <a class="tab" data-tab="home" href="index.html">Inicio</a>
+      <a class="tab active" data-tab="inventory" href="inventario.html">Inventario</a>
+      <a class="tab" data-tab="orders" href="pedidos.html">Pedidos</a>
+      <a class="tab" data-tab="clients" href="clientes.html">Clientes</a>
+    </div>
+    <button class="btn secondary" onclick="logout()" style="margin-left:auto">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- 🔹 Contenido -->
+<div class="container">
+  <h1>Inventario</h1>
+  <p class="sub">Agrega, edita y elimina productos.</p>
+
+  <!-- Formulario de producto -->
+  <div class="panel">
+    <form id="productForm" class="grid grid-3">
+      <div>
+        <label>SKU</label>
+        <input class="input" name="sku" placeholder="PARA-500" required>
+      </div>
+      <div>
+        <label>Nombre</label>
+        <input class="input" name="name" placeholder="Paracetamol 500mg" required>
+      </div>
+      <div>
+        <label>Imagen</label>
+        <input type="file" accept="image/*" class="input" name="image">
+      </div>
+      <div class="grid grid-3">
+        <div>
+          <label>Precio</label>
+          <input type="number" min="0" step="0.01" class="input" name="price" placeholder="0.70" required>
+        </div>
+        <div>
+          <label>Stock</label>
+          <input type="number" min="0" step="1" class="input" name="stock" placeholder="100" required>
+        </div>
+        <div style="display:flex;align-items:end;gap:8px">
+          <button class="btn" type="submit">Guardar</button>
+          <button class="btn secondary" type="reset" id="cancelEdit" style="display:none">Cancelar</button>
+        </div>
+      </div>
+      <input type="hidden" name="id">
+    </form>
+  </div>
+
+  <!-- Catálogo de productos -->
+  <div class="panel">
+    <div class="actions" style="justify-content:space-between">
+      <input id="search" class="input" placeholder="Buscar por nombre o SKU..." style="max-width:420px">
+      <small id="count" class="kbd"></small>
+    </div>
+    <div id="catalogo" class="grid grid-4"></div>
+  </div>
+</div>
+
+<footer>FarmaPlus · Inventario</footer>
+
+<!-- 🔹 Popup para editar productos -->
+<div id="productPopup" class="popup product-popup">
+  <div class="popup-content" style="max-width: 780px; padding: 40px 50px;">
+    <h3>Editar Producto</h3>
+    <form id="productPopupForm">
+      
+      <!-- SKU y Nombre -->
+      <div>
+        <label>SKU</label>
+        <input type="text" name="sku" required>
+      </div>
+      <div>
+        <label>Nombre</label>
+        <input type="text" name="name" required>
+      </div>
+      
+      <!-- Imagen -->
+      <div class="full-width">
+        <label>Imagen</label>
+        <input type="file" accept="image/*" name="image">
+        <div id="currentImage">
+          <img src="" alt="Imagen actual" style="display:none;">
+        </div>
+      </div>
+      
+      <!-- Precio y Stock -->
+      <div>
+        <label>Precio</label>
+        <input type="number" min="0" step="0.01" name="price" required>
+      </div>
+      <div>
+        <label>Stock</label>
+        <input type="number" min="0" step="1" name="stock" required>
+      </div>
+
+      <!-- Botones dentro del formulario -->
+      <div class="actions-buttons">
+        <button class="btn save" type="submit">Guardar</button>
+        <button class="btn cancel" type="button" id="cancelProductEdit">Cancelar</button>
+      </div>
+
+      <input type="hidden" name="id">
+    </form>
+
+    <!-- Botón para cerrar popup -->
+    <button class="popup-close" id="closeProductPopup">✖</button>
+  </div>
+</div>

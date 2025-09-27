@@ -1,0 +1,205 @@
+:root{
+  --bg:#f4f8f9;
+  --panel:#ffffff;
+  --muted:#6b7280;
+  --text:#1f2937;
+  --brand:#10b981;
+  --brand-2:#3b82f6;
+  --ok:#22c55e;
+  --warn:#facc15;
+  --danger:#ef4444;
+  --border:#d1d5db;
+  --input:#f9fafb;
+}
+
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  height:100%;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  color:var(--text);
+  background:
+    linear-gradient(180deg, rgba(224,242,254,0.9), rgba(244,248,249,0.9)),
+    url('https://concep.es/wp-content/uploads/2024/04/concep_farm_villafuerte-7-Copy.jpg') no-repeat center top;
+  background-size:cover;
+}
+
+/* Contenedor principal */
+.container{max-width:1100px;margin:0 auto;padding:24px}
+
+/* Navbar */
+.nav{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:saturate(180%) blur(8px);
+  border-bottom:1px solid var(--border);
+}
+.nav .inner{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  justify-content:space-between;
+  padding:14px 24px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  letter-spacing:.3px;
+  color:var(--brand);
+}
+.brand .dot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+}
+
+/* Tabs */
+.tabs{display:flex;gap:10px;flex-wrap:wrap}
+.tab{
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(16,185,129,0.1);
+  transition:all .2s;
+  color:var(--text);
+}
+.tab:hover{transform:translateY(-2px);border-color:var(--brand-2)}
+.tab.active{
+  background:linear-gradient(180deg,rgba(16,185,129,.15),rgba(59,130,246,.10));
+  border-color:var(--brand);
+}
+
+/* Headings */
+h1{font-size:28px;margin:10px 0 8px;color:var(--brand)}
+.sub{color:var(--muted);margin-top:0}
+
+/* Panels */
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+/* Grid */
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* Inputs */
+.input, select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--input);
+  color:var(--text);
+  outline:none;
+}
+label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
+
+/* Botones */
+.btn{
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+  color:white;
+  background:var(--brand);
+  cursor:pointer;
+  transition:all .2s;
+}
+.btn:hover{transform:translateY(-2px);background:var(--brand-2)}
+.btn.secondary{background:#6b7280}
+.btn.ghost{background:transparent;border:1px solid var(--border)}
+.btn.danger{background:var(--danger)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* Acciones y tablas */
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.table{width:100%;border-collapse:separate;border-spacing:0 8px}
+.table th,.table td{padding:12px 14px;text-align:left}
+.table thead th{color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)}
+.row{background:var(--input);border:1px solid var(--border);border-radius:12px}
+
+/* Cards y estadísticas */
+.card{display:flex;flex-direction:column;gap:10px}
+.stat{display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px dashed var(--border);border-radius:14px;background:rgba(16,185,129,.05)}
+.badge{padding:6px 10px;border-radius:999px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);font-size:12px}
+
+/* Extras */
+hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+small{color:var(--muted)}
+footer{color:var(--muted);padding:28px 0;text-align:center}
+
+/* Responsive */
+@media (max-width:800px){
+  .grid-2,.grid-3{grid-template-columns:1fr}
+}
+
+.tab.active {
+  font-weight: bold;
+  color: green;
+  border-bottom: 2px solid green;
+}
+/* ===============================
+   Catálogo de productos (grid 5 columnas)
+   =============================== */
+   #catalogo {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 columnas */
+    gap: 16px; /* espacio entre productos */
+    margin-top: 16px;
+  }
+  
+  /* Tarjeta de producto */
+  .product-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s; /* animación hover */
+  }
+  
+  /* Hover elegante */
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  }
+  
+  /* Imagen dentro de la tarjeta */
+  .product-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  
+  /* Nombre y precio */
+  .product-card .name {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .product-card .price {
+    color: var(--brand);
+    font-weight: bold;
+  }
+  
+  /* Responsive: menos columnas según pantalla */
+  @media (max-width:1200px) { #catalogo { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width:992px)  { #catalogo { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width:768px)  { #catalogo { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width:500px)  { #catalogo { grid-template-columns: 1fr; } }
+
+
+
+  

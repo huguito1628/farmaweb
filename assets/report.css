@@ -1,0 +1,124 @@
+/* ================================
+   FarmaPlus · Reporte de ventas (Minimalista)
+   ================================ */
+
+/* Fondo del modal */
+#reportModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(31, 41, 55, 0.6); /* Fondo oscuro semi-transparente */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Contenedor del modal */
+#reportModal .modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  max-width: 850px;
+  width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+/* Animación de entrada */
+#reportModal.show {
+  opacity: 1;
+}
+#reportModal.show .modal-content {
+  transform: translateY(0);
+}
+
+/* Título del modal */
+.modal-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #10b981; /* Verde FarmaPlus */
+  margin-bottom: 1.2rem;
+}
+
+/* Botón de cerrar minimalista */
+#closeModal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.2rem;
+  color: #10b981;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+#closeModal:hover {
+  color: #059669;
+}
+
+/* Canvas del gráfico */
+#salesChart {
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  background: #f9fafb;
+  padding: 1rem;
+}
+
+/* Scroll estilizado para contenido largo */
+#reportModal .modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+#reportModal .modal-content::-webkit-scrollbar-thumb {
+  background-color: rgba(16, 185, 129, 0.4);
+  border-radius: 3px;
+}
+#reportModal .modal-content::-webkit-scrollbar-track {
+  background: #f0fdf4;
+  border-radius: 3px;
+}
+/* Popup de pedido guardado */
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+.popup.show {
+  display: flex;
+}
+.popup-content {
+  background: #10b981;
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  font-weight: 500;
+  min-width: 300px;
+}
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}

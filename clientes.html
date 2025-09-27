@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FarmaPlus · Clientes</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/popup.css">
+  
+  <!-- main.js debe cargarse con defer -->
+  <script src="assets/main.js" defer></script>
+  <script src="assets/clients.js" defer></script>
+
+  <script>
+    // 🔒 Validación de sesión
+    if (!localStorage.getItem("loggedUser")) {
+      window.location.replace("auth.html");
+    }
+    function logout() {
+      localStorage.removeItem("loggedUser");
+      window.location.replace("auth.html");
+    }
+  </script>
+</head>
+<!-- Agregamos data-page para activar la pestaña automáticamente -->
+<body data-page="clients">
+
+<div class="nav">
+  <div class="inner">
+    <div class="brand"><span class="dot"></span> FarmaPlus</div>
+    <div class="tabs">
+      <a class="tab" data-tab="home" href="index.html">Inicio</a>
+      <a class="tab" data-tab="inventory" href="inventario.html">Inventario</a>
+      <a class="tab" data-tab="orders" href="pedidos.html">Pedidos</a>
+      <a class="tab" data-tab="clients" href="clientes.html">Clientes</a>
+    </div>
+    <button class="btn secondary" onclick="logout()" style="margin-left:auto">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="container">
+  <h1>Clientes</h1>
+  <p class="sub">Registra nombres, teléfonos y correos.</p>
+
+  <!-- SECCIÓN CONSULTA POR DNI -->
+  <div class="panel">
+    <h2>Registrar Cliente por DNI</h2>
+    <div style="display:flex; gap:8px; align-items:end;">
+      <input id="dniInput" class="input" placeholder="Ingrese DNI" maxlength="8" pattern="\d{8}" title="DNI de 8 dígitos">
+      <button id="dniBtn" class="btn">Consultar DNI</button>
+    </div>
+  </div>
+
+  <!-- FORMULARIO PRINCIPAL -->
+  <div class="panel">
+    <form id="clientForm" class="grid grid-3">
+      <div>
+        <label>Nombre</label>
+        <input 
+          class="input" 
+          name="name" 
+          placeholder="Nombre y apellido" 
+          required
+          pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+          title="Solo se permiten letras y espacios">
+      </div>
+      <div>
+        <label>Teléfono</label>
+        <input 
+          class="input" 
+          name="phone" 
+          placeholder="999999999"
+          required
+          pattern="\d{9}" 
+          title="El teléfono debe tener 9 dígitos numéricos">
+      </div>
+      <div class="grid grid-3">
+        <div>
+          <label>Email</label>
+          <input 
+            class="input" 
+            name="email" 
+            type="email" 
+            placeholder="correo@ejemplo.com" 
+            required>
+        </div>
+        <div style="display:flex;align-items:end;gap:8px">
+          <button class="btn" type="submit">Guardar</button>
+          <button class="btn secondary" type="reset" id="cancelEdit" style="display:none">Cancelar</button>
+        </div>
+      </div>
+      <input type="hidden" name="id">
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="actions" style="justify-content:space-between">
+      <input id="search" class="input" placeholder="Buscar por nombre o email..." style="max-width:420px">
+      <small id="count" class="kbd"></small>
+    </div>
+    <table class="table">
+      <thead>
+        <tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th></th></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>FarmaPlus · Clientes</footer>
+<!-- Popup elegante para clientes -->
+<div id="clientPopup" class="popup">
+  <div class="popup-content">
+    <strong class="popup-title"></strong>
+    <p class="popup-message"></p>
+    <button id="closeClientPopup">✖</button>
+  </div>
+</div>
+</body>
+</html>

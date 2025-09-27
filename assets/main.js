@@ -1,4 +1,3 @@
-
 // Función para activar la pestaña
 function setActive(tabName) {
   // Quitar la clase 'active' de todas las pestañas

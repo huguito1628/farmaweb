@@ -6,6 +6,7 @@
   <title>FarmaPlus · Inicio</title>
   <link rel="stylesheet" href="assets/styles.css">
   <script src="assets/main.js"></script>
+  <link rel="stylesheet" href="assets/popup.css">
 
   <script>
     // 🔒 Validación de sesión
@@ -73,9 +74,34 @@
 
 <footer>FarmaPlus · Inicio</footer>
 
+<!-- POPUP UNIVERSAL -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <span class="popup-close" id="closePopup">&times;</span>
+    <h3 id="popupTitle"></h3>
+    <p id="popupMessage"></p>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const loadData = (key) => JSON.parse(localStorage.getItem(key)) || [];
+
+  const popup = document.getElementById('popup');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupMessage = document.getElementById('popupMessage');
+  const closePopup = document.getElementById('closePopup');
+
+  function showPopup(type, title, message) {
+    popup.className = 'popup ' + type;
+    popupTitle.textContent = title;
+    popupMessage.textContent = message;
+    popup.classList.add('show');
+  }
+
+  closePopup.addEventListener('click', () => {
+    popup.classList.remove('show');
+  });
 
   // Actualizar badges
   document.getElementById('statProducts').textContent = loadData('products').length;
@@ -107,10 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (obj.products) localStorage.setItem('products', JSON.stringify(obj.products));
         if (obj.clients) localStorage.setItem('clients', JSON.stringify(obj.clients));
         if (obj.orders) localStorage.setItem('orders', JSON.stringify(obj.orders));
-        alert('Datos importados ✅');
-        location.reload();
+        showPopup('success', '¡Éxito!', 'Datos importados ✅');
+        setTimeout(() => location.reload(), 1500);
       } catch (err) {
-        alert('Archivo inválido.');
+        showPopup('error', 'Error', 'Archivo inválido.');
       }
     };
     reader.readAsText(file);
@@ -125,3 +151,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
